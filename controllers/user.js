@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 const User = require('../models/User');
 
 async function index (req, res) {
@@ -11,7 +13,15 @@ async function index (req, res) {
 
 async function create (req, res) {
   try {
+    // Get the data
     const data = req.body;
+    // Generate a salt with a specific cost
+    const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_SALT_ROUNDS));
+    console.log(data);
+    console.log(salt);
+    // Hash the password
+    data["user_password"] = await bcrypt.hash(data["user_password"], salt);
+
     const result = await User.create(data);
     res.status(201).send(result);
   } catch (err) {

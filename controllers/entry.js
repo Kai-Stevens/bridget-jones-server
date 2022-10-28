@@ -2,7 +2,10 @@ const Entry = require('../models/Entry');
 
 async function index (req, res) {
   try {
-    const entries = await Entry.getAll();
+    const query = req.query;
+    const author_id = query.author_id;
+
+    const entries = await Entry.getAll(author_id);
     res.json(entries);
   } catch (err) {
     res.status(500).json({"error": err.message});
@@ -21,14 +24,34 @@ async function create (req, res) {
 
 async function show (req, res) {
   try {
+      const query = req.query;
+      const author_id = query.author_id;
       const id = parseInt(req.params.id);
-      const entry = await Entry.getOneById(id);
+      const entry = await Entry.getOneById(id, author_id);
       res.json(entry);
   } catch (err) {
       res.status(404).json({"error": err.message})
   }
 };
 
+async function update(req, res) {
+  try {
+    const data = req.body;
+
+    const query = req.query;
+    
+    const author_id = query.author_id;
+    const id = parseInt(req.params.id);
+
+    const entry = await Entry.getOneById(id, author_id);
+    const updated = await entry.update(data);
+
+    res.json(updated);
+  } catch (err) {
+    res.status(404).json({"error": err.message})
+  }
+}
+
 module.exports = {
-  index, create, show
+  index, create, show, update
 }
