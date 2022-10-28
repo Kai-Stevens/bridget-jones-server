@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const User = require('../models/User');
+const Token = require('../models/Token');
 
 async function index (req, res) {
   try {
@@ -11,7 +12,7 @@ async function index (req, res) {
   }
 }
 
-async function create (req, res) {
+async function register (req, res) {
   try {
     // Get the data
     const data = req.body;
@@ -39,6 +40,25 @@ async function show (req, res) {
   }
 };
 
+async function login (req, res) {
+  try {
+      const user = await User.getOneByUsername(req.body.username);
+
+      const authenticated = await bcrypt.compare(req.body.user_password, user["user_password"]);
+
+      if (!authenticated) {
+          throw new Error("Incorrect credentials.");
+      } else {
+
+          const token = await Token.create(user["user_id"]);
+
+          res.status(200).json({ authenticated: true, token: token.token });
+      }
+  } catch (err) {
+      res.status(403).json({"error": err.message})
+  }
+}
+
 module.exports = {
-  index, create, show
+  index, register, show, login
 }

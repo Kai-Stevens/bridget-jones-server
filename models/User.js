@@ -22,6 +22,14 @@ class User {
     return new User(response.rows[0]);
   }
 
+  static async getOneByUsername(username) {
+    const response = await db.query("SELECT * FROM user_account WHERE username = $1", [username]);
+    if (response.rows.length != 1) {
+        throw new Error("Unable to locate user.");
+    }
+    return new User(response.rows[0]);
+}
+
   static async create(data) {
     const {username, user_password} = data;
     let response = await db.query("INSERT INTO user_account (username, user_password) VALUES ($1, $2) RETURNING user_id",
