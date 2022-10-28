@@ -39,7 +39,7 @@ async function update(req, res) {
     const data = req.body;
 
     const query = req.query;
-    
+
     const author_id = query.author_id;
     const id = parseInt(req.params.id);
 
@@ -52,6 +52,23 @@ async function update(req, res) {
   }
 }
 
+async function destroy(req, res) {
+  try {
+    const query = req.query;
+
+    const id = parseInt(req.params.id); 
+    const author_id = query.author_id;
+
+    const entry = await Entry.getOneById(id, author_id);
+    const deleted = await entry.destroy();
+
+    res.json(deleted);
+
+  } catch (err) {
+    res.status(404).json({"error": err.message});
+  }
+};
+
 module.exports = {
-  index, create, show, update
+  index, create, show, update, destroy
 }

@@ -51,14 +51,24 @@ class Entry {
     }
     
     // update the record
-    await db.query("UPDATE diary_entry SET title = $1, content = $2, category = $3 WHERE author_id = $4 AND diary_entry_id = $5", [title, content, category, this.author_id, this.diary_entry_id]);
-    const updatedEntry = await Entry.getOneById(this.diary_entry_id, this.author_id);
+    const response = await db.query("UPDATE diary_entry SET title = $1, content = $2, category = $3 WHERE author_id = $4 AND diary_entry_id = $5 RETURNING *", [title, content, category, this.author_id, this.diary_entry_id]);
+    // const updatedEntry = await Entry.getOneById(this.diary_entry_id, this.author_id);
+    
+    // if (response.rows[0].length != 1) {
+    //   throw new Error("Unable to update entry.");
+    // }
 
-    if (!updatedEntry) {
-      throw new Error("Unable to locate entry.");
-    }
+    return new Entry(response.rows[0]);
+  }
 
-    return updatedEntry;
+  async destroy() {
+    const response = await db.query("DELETE FROM diary_entry WHERE diary_entry_id = $1 AND author_id = $2 RETURNING *;", [this.diary_entry_id, this.author_id]);
+    
+    // if (response.rows[0].length != 1) {
+    //   throw new Error("Unable to delete entry.");
+    // }
+
+    return new Entry(response.rows[0]);
   }
 
 }
