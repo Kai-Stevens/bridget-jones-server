@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 
 const logRoutes = require('./middleware/logger');
-// const postRouter = require('./routers/post');
-// const userRouter = require('./routers/user');
+const entryRouter = require('./routers/entry');
+const userRouter = require('./routers/user');
 
 const api = express();
 
@@ -17,3 +17,8 @@ api.get("/", (req, res) => {
         description: "A Diary API for Bridget Jones"
     });
 });
+
+api.use("/entries", entryRouter);
+api.use("/users", userRouter);
+
+module.exports = api;
