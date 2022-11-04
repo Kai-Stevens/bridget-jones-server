@@ -11,9 +11,18 @@ class Entry {
     this.author_id = author_id;
   }
 
+  static async testGetAll() {
+    const response = await db.query("SELECT * FROM diary_entry ORDER BY date_time DESC");
+    const entries = response.rows.map(diaryEntry => new Entry(diaryEntry));
+    return entries;
+  }
+
   static async getAll(author_id) {
     const response = await db.query("SELECT * FROM diary_entry WHERE author_id = $1 ORDER BY date_time DESC", [author_id]);
-    return response.rows.map(de => new Entry(de));
+    const finalResponse = response.rows.map(diaryEntries => new Entry(diaryEntries));
+    console.log("MODEL: ")
+    console.log(finalResponse);
+    return finalResponse;
   }
 
   static async getOneById(id, author_id) {

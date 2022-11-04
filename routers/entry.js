@@ -6,6 +6,7 @@ const authenticator = require('../middleware/authenticator.js');
 const entryRouter = Router();
 
 entryRouter.get("/", authenticator, entryController.index);
+entryRouter.get("/everything", entryController.testGetAll);
 entryRouter.post("/", authenticator, entryController.create);
 entryRouter.get("/:id", authenticator, entryController.show);
 entryRouter.patch("/:id", authenticator, entryController.update);

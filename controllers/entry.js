@@ -1,12 +1,28 @@
 const Entry = require('../models/Entry');
+const Token = require('../models/Token');
+
+// retrieve all posts from all users so I can test without authentication: Delete in production
+async function testGetAll (req, res) {
+  try {
+    const entries = await Entry.testGetAll();
+    res.json(entries);
+  } catch (err) {
+    res.status(500).json({"error": err.message})
+  }
+}
 
 async function index (req, res) {
   try {
-    const query = req.query;
-    const author_id = query.author_id;
 
+    const userToken = req.headers["authorization"];
+    const validToken = await Token.getOneByToken(userToken);
+
+    const author_id  = validToken["user_id"];
+    console.log(author_id);
     const entries = await Entry.getAll(author_id);
-    res.json(entries);
+    console.log("CONTROLLERS: ")
+    console.log(entries);
+    res.status(200).json(entries);
   } catch (err) {
     res.status(500).json({"error": err.message});
   }
@@ -70,5 +86,5 @@ async function destroy(req, res) {
 };
 
 module.exports = {
-  index, create, show, update, destroy
+  index, create, show, update, destroy, testGetAll
 }
